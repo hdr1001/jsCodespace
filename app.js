@@ -34,11 +34,31 @@ function createUsers(numUsers) {
                JSON.stringify(usr, null, 3),
                { encoding: 'utf8' }
             )
-               .then(console.log(`Wrote file ${base} successfully`))
+               .then( /* console.log(`Wrote file ${base} successfully`) */ )
                .catch(err => console.error(err.message));
          })
          .catch(err => console.error(err.message))
    }
 }
 
-createUsers(10);
+//createUsers(10);
+
+function processUsers() {
+   const dataPath = path.format(filePathData);
+
+   fs.readdir(dataPath)
+      .then(dirFileNames => {
+         dirFileNames.filter(fileName => fileName.endsWith('.json')).forEach(fileName => {
+            fs.readFile(dataPath + fileName)
+               .then(jsonData => {
+                  const usr = JSON.parse(jsonData);
+
+                  console.log(`${usr.firstName}\t${usr.lastName}`);
+               })
+               .catch(err => console.error(err.message))
+            })
+      })
+      .catch(err => console.error(err.message))
+}
+
+processUsers();
