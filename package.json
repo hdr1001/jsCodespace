@@ -1,0 +1,30 @@
+{
+  "name": "jscodespace",
+  "version": "1.0.0",
+  "description": "JavaScript development using a GitHub Codespace",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hdr1001/jsCodespace.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "development",
+    "GitHub",
+    "Codespace"
+  ],
+  "author": "Hans de Rooij",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hdr1001/jsCodespace/issues"
+  },
+  "homepage": "https://github.com/hdr1001/jsCodespace#readme",
+  "type": "module",
+  "dependencies": {
+    "@faker-js/faker": "^7.3.0",
+    "limiter": "^2.0.1"
+  }
+}
