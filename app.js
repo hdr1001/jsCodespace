@@ -43,20 +43,35 @@ function createUsers(numUsers) {
 
 //createUsers(10);
 
+function processUser(file) {
+   return new Promise((resolve, reject) => {
+      fs.readFile(file)
+         .then(jsonData => {
+            let usr;
+            
+            try {
+               usr = JSON.parse(jsonData);
+            }
+            catch(err) {
+               reject(err)
+            }
+
+            resolve(`${usr.firstName}\t${usr.lastName}`);
+         })
+         .catch(err => reject(err))
+   })
+}
+
 function processUsers() {
    const dataPath = path.format(filePathData);
 
    fs.readdir(dataPath)
       .then(dirFileNames => {
-         dirFileNames.filter(fileName => fileName.endsWith('.json')).forEach(fileName => {
-            fs.readFile(dataPath + fileName)
-               .then(jsonData => {
-                  const usr = JSON.parse(jsonData);
-
-                  console.log(`${usr.firstName}\t${usr.lastName}`);
-               })
-               .catch(err => console.error(err.message))
-            })
+         const jsonFiles = dirFileNames.filter(fileName => fileName.endsWith('.json'));
+         
+         Promise.all(jsonFiles.map(jsonFile => processUser(dataPath + jsonFile)))
+            .then(values => values.forEach(value => console.log(value)))
+            .catch(err => console.error(err.message))
       })
       .catch(err => console.error(err.message))
 }
