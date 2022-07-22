@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { RateLimiter } from 'limiter';
 import * as path from 'path';
-import { promises as fs } from 'fs';
+import { promises as fs, createWriteStream } from 'fs';
 
 const limiter = new RateLimiter({ tokensPerInterval: 2, interval: 'second' });
 
 const filePathData = { root: '', dir: 'data' };
+const filePathOut = { root: '', dir: 'out' };
 
 const dateUserCreatedTo = new Date();
 const dateUserCreatedFrom = new Date();
@@ -41,7 +42,15 @@ function createUsers(numUsers) {
    }
 }
 
-//createUsers(10);
+//createUsers(5);
+
+function addFileWriteStreamlisteners(ws, file) {
+   ws.on('open', () => console.log(`Opened write stream for file ${file}`));
+
+   ws.on('close', () => console.log(`Closed write stream for file ${file}`));
+
+   ws.on('error', err => console.error(err.message));
+}
 
 function processUser(file) {
    return new Promise((resolve, reject) => {
@@ -56,7 +65,7 @@ function processUser(file) {
                reject(err)
             }
 
-            resolve(`${usr.firstName}\t${usr.lastName}`);
+            resolve(`${usr.firstName} ${usr.lastName}\n`);
          })
          .catch(err => reject(err))
    })
@@ -70,7 +79,17 @@ function processUsers() {
          const jsonFiles = dirFileNames.filter(fileName => fileName.endsWith('.json'));
          
          Promise.all(jsonFiles.map(jsonFile => processUser(dataPath + jsonFile)))
-            .then(values => values.forEach(value => console.log(value)))
+            .then(values => {
+               const fileOut = path.format({ ...filePathOut, base: 'users.txt' });
+
+               const fileWs = createWriteStream(fileOut);
+
+               addFileWriteStreamlisteners(fileWs, fileOut);
+
+               values.forEach(elem => fileWs.write(elem));
+
+               fileWs.end();
+            })
             .catch(err => console.error(err.message))
       })
       .catch(err => console.error(err.message))
